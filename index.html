@@ -3,125 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Assessment Tool v4.2</title>
+    <title>Quantitative Analysis Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #ffffff; --text: #2d3436; --accent: #0984e3; }
+        :root { --bg: #ffffff; --text: #2d3436; --accent: #00b894; --vimeo: #1ab7ea; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Montserrat', sans-serif; background: var(--bg); overflow: hidden; }
 
-        /* --- Quiz Mode (The Cover) --- */
+        /* --- Math Quiz Layer --- */
         #quiz-mode {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: white; z-index: 9999; transition: opacity 0.15s;
+            background: white; z-index: 9999;
         }
-        .quiz-content { max-width: 500px; padding: 20px; }
-        .q-tag { font-size: 12px; color: var(--accent); font-weight: 700; text-transform: uppercase; }
-        h1 { font-size: 24px; margin: 10px 0; font-weight: 500; }
-        .input-sim { width: 100%; height: 40px; border: 1px solid #dfe6e9; margin-top: 20px; border-radius: 4px; }
+        .quiz-container { width: 400px; text-align: center; }
+        #question { font-size: 32px; font-weight: 300; margin-bottom: 20px; color: #2d3436; }
+        #math-input {
+            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 6px;
+            font-family: 'Montserrat'; font-size: 20px; text-align: center; outline: none;
+        }
+        #math-input:focus { border-color: var(--accent); }
+        .hint { font-size: 10px; color: #b2bec3; margin-top: 40px; letter-spacing: 2px; }
 
-        /* --- Workspace Mode --- */
-        #workspace { width: 100%; height: 100%; background: #f9f9f9; position: relative; }
-        
+        /* --- Workspace Layer --- */
+        #workspace { width: 100%; height: 100%; background: #f4f7f6; position: relative; }
         #float-window {
-            position: absolute; top: 100px; left: 100px;
-            width: 600px; height: 380px;
-            background: #fff; border-radius: 8px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column;
-            resize: both; overflow: hidden; min-width: 300px; min-height: 200px;
+            position: absolute; top: 80px; left: 80px; width: 640px; height: 400px;
+            background: #fff; border-radius: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; resize: both; overflow: hidden;
         }
-
         .top-bar {
-            height: 35px; background: #2d3436; color: white;
-            display: flex; align-items: center; padding: 0 15px;
-            cursor: move; font-size: 11px; font-weight: 700; justify-content: space-between;
+            height: 38px; background: #1e272e; color: white; display: flex;
+            align-items: center; padding: 0 15px; cursor: move; font-size: 11px;
+            font-weight: 700; justify-content: space-between; user-select: none;
         }
-
-        .controls { padding: 5px; background: #eee; display: flex; gap: 5px; }
-        .controls input { flex: 1; font-family: 'Montserrat'; font-size: 12px; padding: 4px; border: 1px solid #ccc; }
-        .controls button { font-size: 10px; cursor: pointer; }
-
-        iframe { flex: 1; border: none; width: 100%; height: 100%; }
+        .controls { padding: 10px; background: #f1f2f6; display: flex; gap: 8px; }
+        .controls input { flex: 1; padding: 6px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; }
+        .controls button { background: var(--vimeo); color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
+        
+        iframe { flex: 1; border: none; background: #000; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="quiz-mode">
-        <div class="quiz-content">
-            <span class="q-tag">Question 4 of 20</span>
-            <h1>Identify the primary linguistic shift in post-modern literature.</h1>
-            <div class="input-sim"></div>
-            <p style="font-size: 11px; color: #b2bec3; margin-top: 40px;">Press [SPACE] to submit response.</p>
+        <div class="quiz-container">
+            <div id="question">24 + 12 = ?</div>
+            <input type="number" id="math-input" placeholder="Answer..." autocomplete="off">
+            <p class="hint">PRESS [SPACE] TO SWITCH VIEW</p>
         </div>
     </div>
 
     <div id="workspace">
         <div id="float-window">
             <div class="top-bar" id="handle">
-                <span>VIRTUAL_DESKTOP_ENVIROMENT</span>
-                <span style="opacity: 0.5;">DRAGGABLE</span>
+                <span>VIMEO_RESOURCE_STREAM</span>
+                <span style="color: var(--vimeo);">PREMIUM ACCESS</span>
             </div>
             <div class="controls">
-                <input type="text" id="vid-url" placeholder="Paste YouTube Video ID here (e.g. dQw4w9WgXcQ)">
-                <button onclick="loadVideo()">LOAD</button>
+                <input type="text" id="vimeo-id" placeholder="Enter Vimeo Video ID (e.g., 76979871)">
+                <button onclick="loadVimeo()">STREAM</button>
             </div>
-            <iframe id="main-frame" src="https://www.youtube.com/embed/videoseries?list=PL38E619E40409F369"></iframe>
+            <iframe id="vimeo-frame" src="https://player.vimeo.com/video/76979871?h=62590740" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
 
     <script>
-        const quiz = document.getElementById('quiz-mode');
-        const win = document.getElementById('float-window');
-        const handle = document.getElementById('handle');
-        const frame = document.getElementById('main-frame');
-        const urlInput = document.getElementById('vid-url');
+        // --- Math Engine ---
+        let ans = 36;
+        const input = document.getElementById('math-input');
+        const qText = document.getElementById('question');
 
-        // Spacebar Toggle
+        function newQ() {
+            let a = Math.floor(Math.random() * 50);
+            let b = Math.floor(Math.random() * 50);
+            ans = a + b;
+            qText.innerText = `${a} + ${b} = ?`;
+            input.value = "";
+        }
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && parseInt(input.value) === ans) newQ();
+        });
+
+        // --- Toggle Logic ---
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
-                quiz.classList.toggle('hidden');
+                document.getElementById('quiz-mode').classList.toggle('hidden');
             }
         });
 
-        // Change Video Logic
-        function loadVideo() {
-            const val = urlInput.value.trim();
-            if(val) {
-                // Allows for full links or just IDs
-                const id = val.includes('v=') ? val.split('v=')[1].split('&')[0] : val;
-                frame.src = `https://www.youtube.com/embed/${id}`;
+        // --- Vimeo Loader ---
+        function loadVimeo() {
+            const id = document.getElementById('vimeo-id').value.trim();
+            if(id) {
+                document.getElementById('vimeo-frame').src = `https://player.vimeo.com/video/${id}`;
             }
         }
 
-        // Draggable Logic
-        let active = false;
-        let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+        // --- Draggable Logic ---
+        const win = document.getElementById('float-window');
+        const handle = document.getElementById('handle');
+        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
 
-        handle.addEventListener("mousedown", dragStart);
-        document.addEventListener("mouseup", dragEnd);
-        document.addEventListener("mousemove", drag);
-
-        function dragStart(e) {
+        handle.addEventListener("mousedown", (e) => {
             initialX = e.clientX - xOffset;
             initialY = e.clientY - yOffset;
-            if (e.target === handle || handle.contains(e.target)) active = true;
-        }
+            if (e.target === handle) active = true;
+        });
 
-        function drag(e) {
+        document.addEventListener("mousemove", (e) => {
             if (active) {
-                e.preventDefault();
                 currentX = e.clientX - initialX;
                 currentY = e.clientY - initialY;
                 xOffset = currentX;
                 yOffset = currentY;
                 win.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
             }
-        }
+        });
 
-        function dragEnd() { active = false; }
+        document.addEventListener("mouseup", () => active = false);
     </script>
 </body>
 </html>
