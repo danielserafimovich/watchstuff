@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantitative Analysis Portal</title>
+    <title>Workspace</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #ffffff; --text: #2d3436; --accent: #00b894; --vimeo: #1ab7ea; }
@@ -13,7 +13,7 @@
         #quiz-mode {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: white; z-index: 9999;
+            background: white; z-index: 9999; transition: background 0.3s ease;
         }
         .quiz-container { width: 400px; text-align: center; }
         #question { font-size: 32px; font-weight: 300; margin-bottom: 20px; color: #2d3436; }
@@ -21,24 +21,39 @@
             width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 6px;
             font-family: 'Montserrat'; font-size: 20px; text-align: center; outline: none;
         }
-        #math-input:focus { border-color: var(--accent); }
-        .hint { font-size: 10px; color: #b2bec3; margin-top: 40px; letter-spacing: 2px; }
+        
+        /* Correct Answer Animation */
+        @keyframes correctFlash {
+            0% { background-color: white; }
+            50% { background-color: #c2fbd7; }
+            100% { background-color: white; }
+        }
+        .flash-success { animation: correctFlash 0.5s ease; }
 
         /* --- Workspace Layer --- */
         #workspace { width: 100%; height: 100%; background: #f4f7f6; position: relative; }
+        
         #float-window {
             position: absolute; top: 80px; left: 80px; width: 640px; height: 400px;
-            background: #fff; border-radius: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column; resize: both; overflow: hidden;
+            background: #fff; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; overflow: hidden; border: 1px solid #ddd;
         }
+
+        /* Minimalist Top Bar */
         .top-bar {
-            height: 38px; background: #1e272e; color: white; display: flex;
-            align-items: center; padding: 0 15px; cursor: move; font-size: 11px;
-            font-weight: 700; justify-content: space-between; user-select: none;
+            height: 32px; background: #f8f9fa; color: #333; display: flex;
+            align-items: center; padding: 0 10px; cursor: move; font-size: 12px;
+            justify-content: space-between; user-select: none; border-bottom: 1px solid #ddd;
         }
-        .controls { padding: 10px; background: #f1f2f6; display: flex; gap: 8px; }
-        .controls input { flex: 1; padding: 6px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; }
-        .controls button { background: var(--vimeo); color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 10px; }
+        
+        .close-btn {
+            cursor: pointer; font-size: 18px; font-weight: 300; padding: 0 5px; color: #999;
+        }
+        .close-btn:hover { color: #ff7675; }
+
+        .controls { padding: 8px; background: #fff; display: flex; gap: 8px; border-bottom: 1px solid #eee; }
+        .controls input { flex: 1; padding: 4px 8px; font-size: 11px; border: 1px solid #ddd; border-radius: 2px; }
+        .controls button { background: #636e72; color: white; border: none; padding: 4px 12px; border-radius: 2px; cursor: pointer; font-size: 10px; }
         
         iframe { flex: 1; border: none; background: #000; }
         .hidden { display: none !important; }
@@ -49,32 +64,36 @@
     <div id="quiz-mode">
         <div class="quiz-container">
             <div id="question">24 + 12 = ?</div>
-            <input type="number" id="math-input" placeholder="Answer..." autocomplete="off">
-            <p class="hint">PRESS [SPACE] TO SWITCH VIEW</p>
+            <input type="number" id="math-input" placeholder="Type answer..." autocomplete="off">
         </div>
     </div>
 
     <div id="workspace">
         <div id="float-window">
             <div class="top-bar" id="handle">
-                <span>VIMEO_RESOURCE_STREAM</span>
-                <span style="color: var(--vimeo);">PREMIUM ACCESS</span>
+                <span>Vimeo Player</span>
+                <span class="close-btn" onclick="toggleView()">×</span>
             </div>
             <div class="controls">
-                <input type="text" id="vimeo-id" placeholder="Enter Vimeo Video ID (e.g., 76979871)">
-                <button onclick="loadVimeo()">STREAM</button>
+                <input type="text" id="vimeo-id" placeholder="Vimeo ID">
+                <button onclick="loadVimeo()">LOAD</button>
             </div>
-            <iframe id="vimeo-frame" src="https://player.vimeo.com/video/76979871?h=62590740" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+            <iframe id="vimeo-frame" src="https://player.vimeo.com/video/76979871" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>
     </div>
 
     <script>
-        // --- Math Engine ---
-        let ans = 36;
+        const quizLayer = document.getElementById('quiz-mode');
         const input = document.getElementById('math-input');
         const qText = document.getElementById('question');
+        let ans = 36;
 
+        // --- Math Engine with Animation ---
         function newQ() {
+            // Trigger animation on the background
+            quizLayer.classList.add('flash-success');
+            setTimeout(() => quizLayer.classList.remove('flash-success'), 500);
+
             let a = Math.floor(Math.random() * 50);
             let b = Math.floor(Math.random() * 50);
             ans = a + b;
@@ -82,15 +101,29 @@
             input.value = "";
         }
 
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && parseInt(input.value) === ans) newQ();
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (parseInt(input.value) === ans) {
+                    newQ();
+                } else {
+                    input.style.borderColor = '#ff7675';
+                    setTimeout(() => input.style.borderColor = '#eee', 500);
+                }
+            }
         });
 
         // --- Toggle Logic ---
+        function toggleView() {
+            quizLayer.classList.toggle('hidden');
+            if (!quizLayer.classList.contains('hidden')) {
+                input.focus();
+            }
+        }
+
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
-                document.getElementById('quiz-mode').classList.toggle('hidden');
+                toggleView();
             }
         });
 
@@ -108,9 +141,10 @@
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
 
         handle.addEventListener("mousedown", (e) => {
+            if (e.target.classList.contains('close-btn')) return;
             initialX = e.clientX - xOffset;
             initialY = e.clientY - yOffset;
-            if (e.target === handle) active = true;
+            active = true;
         });
 
         document.addEventListener("mousemove", (e) => {
@@ -124,6 +158,9 @@
         });
 
         document.addEventListener("mouseup", () => active = false);
+        
+        // Initial focus
+        input.focus();
     </script>
 </body>
 </html>
