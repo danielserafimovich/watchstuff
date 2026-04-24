@@ -3,155 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Evaluation System</title>
+    <title>Academic Assessment Tool v4.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --primary-bg: #ffffff;
-            --text-color: #2d3436;
-            --accent: #0984e3;
-        }
+        :root { --bg: #ffffff; --text: #2d3436; --accent: #0984e3; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Montserrat', sans-serif; background: var(--bg); overflow: hidden; }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-color);
-            overflow: hidden;
-        }
-
-        /* --- Quiz Overlay (The "Disguise") --- */
+        /* --- Quiz Mode (The Cover) --- */
         #quiz-mode {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: white;
-            z-index: 1000;
-            transition: opacity 0.2s ease-in-out;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: white; z-index: 9999; transition: opacity 0.15s;
+        }
+        .quiz-content { max-width: 500px; padding: 20px; }
+        .q-tag { font-size: 12px; color: var(--accent); font-weight: 700; text-transform: uppercase; }
+        h1 { font-size: 24px; margin: 10px 0; font-weight: 500; }
+        .input-sim { width: 100%; height: 40px; border: 1px solid #dfe6e9; margin-top: 20px; border-radius: 4px; }
+
+        /* --- Workspace Mode --- */
+        #workspace { width: 100%; height: 100%; background: #f9f9f9; position: relative; }
+        
+        #float-window {
+            position: absolute; top: 100px; left: 100px;
+            width: 600px; height: 380px;
+            background: #fff; border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column;
+            resize: both; overflow: hidden; min-width: 300px; min-height: 200px;
         }
 
-        .quiz-container {
-            max-width: 600px;
-            padding: 40px;
+        .top-bar {
+            height: 35px; background: #2d3436; color: white;
+            display: flex; align-items: center; padding: 0 15px;
+            cursor: move; font-size: 11px; font-weight: 700; justify-content: space-between;
         }
 
-        h2 { font-weight: 700; margin-bottom: 10px; }
-        p { font-weight: 300; color: #636e72; }
+        .controls { padding: 5px; background: #eee; display: flex; gap: 5px; }
+        .controls input { flex: 1; font-family: 'Montserrat'; font-size: 12px; padding: 4px; border: 1px solid #ccc; }
+        .controls button { font-size: 10px; cursor: pointer; }
 
-        .question-box {
-            margin-top: 30px;
-            border-left: 4px solid var(--accent);
-            padding-left: 20px;
-        }
-
-        /* --- Video Mode (The Hidden Content) --- */
-        #video-mode {
-            width: 100%;
-            height: 100%;
-            background: #f1f2f6;
-            display: block;
-        }
-
-        #draggable-container {
-            position: absolute;
-            top: 50px;
-            left: 50px;
-            width: 640px;
-            height: 360px;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            resize: both; /* Native resizing */
-            overflow: auto;
-            cursor: move;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            pointer-events: auto;
-        }
-
-        .handle {
-            height: 30px;
-            background: #2d3436;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            color: white;
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
+        iframe { flex: 1; border: none; width: 100%; height: 100%; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="quiz-mode">
-        <div class="quiz-container">
-            <p>Module 4: Logical Reasoning</p>
-            <h2>Question 14: Analyze the sequence below.</h2>
-            <div class="question-box">
-                <p>If $x^2 + y = 14$ and $y = 5$, determine the value of $x$ for all positive integers.</p>
-            </div>
-            <p style="margin-top: 50px; font-size: 12px; opacity: 0.5;">Awaiting input...</p>
+        <div class="quiz-content">
+            <span class="q-tag">Question 4 of 20</span>
+            <h1>Identify the primary linguistic shift in post-modern literature.</h1>
+            <div class="input-sim"></div>
+            <p style="font-size: 11px; color: #b2bec3; margin-top: 40px;">Press [SPACE] to submit response.</p>
         </div>
     </div>
 
-    <div id="video-mode">
-        <div id="draggable-container">
-            <div class="handle" id="drag-handle">Workspace - Drag Me</div>
-            <iframe src="https://www.youtube.com/embed/videoseries?list=PL38E619E40409F369" allowfullscreen></iframe>
+    <div id="workspace">
+        <div id="float-window">
+            <div class="top-bar" id="handle">
+                <span>VIRTUAL_DESKTOP_ENVIROMENT</span>
+                <span style="opacity: 0.5;">DRAGGABLE</span>
+            </div>
+            <div class="controls">
+                <input type="text" id="vid-url" placeholder="Paste YouTube Video ID here (e.g. dQw4w9WgXcQ)">
+                <button onclick="loadVideo()">LOAD</button>
+            </div>
+            <iframe id="main-frame" src="https://www.youtube.com/embed/videoseries?list=PL38E619E40409F369"></iframe>
         </div>
     </div>
 
     <script>
         const quiz = document.getElementById('quiz-mode');
-        const container = document.getElementById('draggable-container');
-        const handle = document.getElementById('drag-handle');
+        const win = document.getElementById('float-window');
+        const handle = document.getElementById('handle');
+        const frame = document.getElementById('main-frame');
+        const urlInput = document.getElementById('vid-url');
 
-        // --- Toggle Logic ---
+        // Spacebar Toggle
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
-                e.preventDefault(); // Prevent page scrolling
+                e.preventDefault();
                 quiz.classList.toggle('hidden');
             }
         });
 
-        // --- Dragging Logic ---
-        let isDragging = false;
-        let offset = { x: 0, y: 0 };
-
-        handle.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offset.x = e.clientX - container.offsetLeft;
-            offset.y = e.clientY - container.offsetTop;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                container.style.left = (e.clientX - offset.x) + 'px';
-                container.style.top = (e.clientY - offset.y) + 'px';
+        // Change Video Logic
+        function loadVideo() {
+            const val = urlInput.value.trim();
+            if(val) {
+                // Allows for full links or just IDs
+                const id = val.includes('v=') ? val.split('v=')[1].split('&')[0] : val;
+                frame.src = `https://www.youtube.com/embed/${id}`;
             }
-        });
+        }
 
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
+        // Draggable Logic
+        let active = false;
+        let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+        handle.addEventListener("mousedown", dragStart);
+        document.addEventListener("mouseup", dragEnd);
+        document.addEventListener("mousemove", drag);
+
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            if (e.target === handle || handle.contains(e.target)) active = true;
+        }
+
+        function drag(e) {
+            if (active) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+                win.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        }
+
+        function dragEnd() { active = false; }
     </script>
 </body>
 </html>
